@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: openshift-python37-ubi8-template
+metadata:
+  annotations:
+    description: Openshift python 3.7 UBI8 image
+    iconClass: icon-python
+    tags: python
+    version: 1.0.0
+  name: ${OCP_IMAGE_NAME}
+objects:
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    labels:
+      build: ${OCP_IMAGE_NAME}
+      type: image
+    name: ${OCP_IMAGE_NAME}
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ${OCP_IMAGE_NAME}:v3.11
+    runPolicy: Serial
+    source:
+      contextDir: ${CONTEXT_DIR}
+      git:
+        ref: ${SOURCE_REPOSITORY_REF}
+        uri: ${SOURCE_REPOSITORY_URL}
+      type: Git
+    strategy:
+      dockerStrategy:
+        dockerfilePath: "${DOCKERFILE_PATH}"
+      type: Docker
+    triggers:
+    - imageChange: {}
+      type: ImageChange
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    name: ${OCP_IMAGE_NAME}
+    labels:
+      app: ${OCP_IMAGE_NAME}
+  spec:
+parameters:
+- description: The name for the Openshift image
+  name: OCP_IMAGE_NAME
+  value: openshift-python37-ubi8-template
+  required: true
+- description: Git source URI for application
+  name: SOURCE_REPOSITORY_URL
+  value: https://github.com/dav1dli/openshift-python37-image.git
+  required: true
+- description: Git branch/tag reference
+  name: SOURCE_REPOSITORY_REF
+  value: master
+  required: true
+- description: Path within Git project to build; empty for root project directory.
+  name: CONTEXT_DIR
+  value: .
+  required: true
+- name: DOCKERFILE_PATH
+  description: File to docker path
+  required: true
+  value: Dockerfile

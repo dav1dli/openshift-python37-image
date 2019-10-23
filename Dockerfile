@@ -1,4 +1,4 @@
-FROM registry.redhat.io/ubi8/s2i-base
+FROM registry.access.redhat.com/ubi8/s2i-base
 LABEL com.redhat.component="openshift-python37-ubi" \
       name="openshift-python37-ubi8" \
       version="3.7" \
