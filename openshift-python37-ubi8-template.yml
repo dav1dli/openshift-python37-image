@@ -46,7 +46,7 @@ objects:
 parameters:
 - description: The name for the Openshift image
   name: OCP_IMAGE_NAME
-  value: openshift-python37-ubi8-template
+  value: openshift-python37-ubi8
   required: true
 - description: Git source URI for application
   name: SOURCE_REPOSITORY_URL
