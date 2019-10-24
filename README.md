@@ -28,4 +28,4 @@ oc process -f openshift-python37-ubi8-template.yml | oc create -f -
 
 # Jenkins build
 
-TBD
+Use provided Jenkinsfile to build and publish the image

@@ -8,8 +8,7 @@ pipeline {
     timeout(time: 10, unit: 'MINUTES')
   }
   environment {
-    imgName = 'ocp-python37-image'
-    projectName = 'sonarqube'
+    imgName = 'openshift-python37-ubi8'
   }
   stages {
     stage('SCM') {
@@ -21,7 +20,7 @@ pipeline {
       when {
         expression {
           openshift.withCluster() {
-            openshift.withProject(projectName) {
+            openshift.withProject() {
               return !openshift.selector("bc", imgName).exists();
             }
           }
@@ -30,8 +29,9 @@ pipeline {
       steps {
         script {
           openshift.withCluster() {
-            openshift.withProject(projectName) {
-              openshift.newBuild("--name=${imgName}", "--strategy docker")
+            openshift.withProject() {
+              openshift.newApp("openshift-python37-ubi8-template.yml")
+              openshift.selector("bc", "$imgName").startBuild("--wait=true")
             }
           }
         }
@@ -41,8 +41,19 @@ pipeline {
       steps {
         script {
           openshift.withCluster() {
-            openshift.withProject(projectName) {
-              openshift.selector("bc", "${imgName}").startBuild("--from-dir=.", "--wait=true")
+            openshift.withProject() {
+              openshift.selector("bc", "$imgName").startBuild("--wait=true")
+            }
+          }
+        }
+      }
+    }
+    stage('Tag') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject() {
+              openshift.tag("${imgName}:v3.11", "${imgName}:latest")
             }
           }
         }
